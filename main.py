@@ -9,6 +9,7 @@ from src.infra.wordpress.wordpressApi import WordpressApi
 from src.infra.database.artikelRepoSqlite import ArticleRepositorySQLite
 from utility.chatGpt.chatGpt import open_chatgpt
 from src.infra.wordpress.wordpressScraper import Wordpress
+import time
 
 
 def main():

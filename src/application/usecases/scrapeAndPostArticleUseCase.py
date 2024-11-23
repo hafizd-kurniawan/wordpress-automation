@@ -5,10 +5,13 @@ class ScrapeAndPostArticleUseCase:
     def __init__(self, service: Service):
         self.services = service
 
-    def execute(self):
-        # Scrape content from the given URL
-        article_data = self.services.scrapingHomePage()
-        print(article_data)
+    def execute(self, generateContent: str = "gpt", targetContent: int = 5):
+        if generateContent == "gpt":
+            for _ in range(10):
+                self.services.generateGpt()
+        else:
+            article_data = self.services.scrapingHomePage()
+            print(article_data)
 
         # # Create an Article object
         # article = Article(title=article_data["title"], content=article_data["content"])

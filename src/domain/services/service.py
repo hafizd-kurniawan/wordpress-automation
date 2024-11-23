@@ -36,17 +36,39 @@ class Service:
         self.wP = wordpress
         self.wPapi = wordpressApi
 
-    def scrapingHomePage(self):
+    def generateGpt(self):
+        article = run_ai(generateContent="gpt")
+        try:
+            title = article[0]["content"]
+            jsonFile = self.contentToTemplate.startCreateTemplate(article, title)
+            if jsonFile is None:
+                return
 
-        # articleDetailContent = self.kompas.scrapingDetailArticle(
-        #     "https://otomotif.kompas.com/read/2024/11/21/110200115/tanpa-bore-up-tingkatkan-performa-motor-dengan-modif-throttle-body#google_vignette"
-        # )
-        # print(articleDetailContent)
+            importTemplateOk, templateId = self.wP.Template.import_template(
+                str(jsonFile)
+            )
+
+            # jika error soon hapus images dan feaature image yg sudah di upload di server akan di download
+            if importTemplateOk:
+                print("TemplateID", templateId)
+                _, response = self.wPapi.createPost(
+                    title=title,
+                    templateId=templateId,
+                    excerpt="",
+                    featuredMedia=67,
+                )
+                print(response)
+        except:
+            print("GPT not responding")
+            return
+
+    def scrapingHomePage(self):
         listOfArticles = self.kompas.scrapingHomePage()
         for articles in listOfArticles:
             for article in articles:
                 print(article.category)
                 print(article.url)
+
                 # mengambil detail content artikel
                 articleDetailContent = self.kompas.scrapingDetailArticle(article.url)
 
@@ -60,13 +82,18 @@ class Service:
                 # upload ke wordpress
                 if jsonFile is None:
                     return
-                templateId = self.wP.Template.import_template(str(jsonFile))
-                print("TemplateID", templateId)
-                _, response = self.wPapi.createPost(
-                    title=article.title,
-                    templateId=templateId,
-                    excerpt=article.excerpt,
-                    featuredMedia=article.featuredImage,
+
+                importTemplateOk, templateId = self.wP.Template.import_template(
+                    str(jsonFile)
                 )
 
-                print("[**] Sukses create post", response)
+                # jika error soon hapus images dan feaature image yg sudah di upload di server akan di download
+                if importTemplateOk:
+                    print("TemplateID", templateId)
+                    _, response = self.wPapi.createPost(
+                        title=article.title,
+                        templateId=templateId,
+                        excerpt=article.excerpt,
+                        featuredMedia=article.featuredImage,
+                    )
+                    print("[**] Sukses create post", response)

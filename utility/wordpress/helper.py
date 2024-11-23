@@ -15,6 +15,48 @@ class ToTemplateWP:
     def createTitleTemplate(self, title):
         self.baseTemplate["title"] = title
 
+    def createHref(self, content, href="#"):
+        return (
+            {
+                "id": "165e6919",
+                "settings": {
+                    "editor": f'<p><a title="" href={href}>Baca juga: {content}</a></p>',
+                    "typography_typography": "custom",
+                    "typography_font_size": {"unit": "px", "size": 18, "sizes": []},
+                    "typography_line_height_mobile": {
+                        "unit": "em",
+                        "size": 1.9,
+                        "sizes": [],
+                    },
+                    "_margin": {
+                        "unit": "px",
+                        "top": "0",
+                        "right": "0",
+                        "bottom": "-6",
+                        "left": "0",
+                        "isLinked": False,
+                    },
+                    "_margin_mobile": {
+                        "unit": "px",
+                        "top": "0",
+                        "right": "0",
+                        "bottom": "-26",
+                        "left": "0",
+                        "isLinked": False,
+                    },
+                    "typography_font_size_mobile": {
+                        "unit": "px",
+                        "size": 14,
+                        "sizes": [],
+                    },
+                },
+                "elements": [],
+                "isInner": False,
+                "widgetType": "text-editor",
+                "elType": "widget",
+            },
+        )
+
     def createHeadingH1(self, content):
         return {
             "id": "3a25b649",
@@ -174,7 +216,6 @@ class ToTemplateWP:
         end_li = "</li>"
         template = []
         for index, c in enumerate(content):
-            print(index, len(content))
             if index == 0:
                 template.append(f"{start_ul} {start_li} {c} {end_li}")
                 continue
@@ -219,6 +260,9 @@ class ToTemplateWP:
                 storeTemplates.append(res)
             if tag == "li":
                 contentLi.append(content)
+            if tag == "a":
+                res = self.createHref(content)
+                storeTemplates.append(res)
 
         if len(contentLi) != 0:
             content = self.createLi(contentLi)

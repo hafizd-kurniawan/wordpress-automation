@@ -76,19 +76,22 @@ class Template(SeleniumDriver):
 
     def getElementorIdTemplate(self, templateName):
         template = templateName.split("/")[-1].split(".json")[0]
-        # self.driver.get(
-        # f"https://ptkaryaagungland.com/wp-admin/edit.php?s={template}&post_status=all&post_type=elementor_library"
-        # )
-        time.sleep(3)
+        time.sleep(5)
 
         pageTree = ConvertWebElement.toLxml(self.driver.page_source)
         # hasil yg di dapat adalah post-101
         # postId = f'//a[contains(text(),"{template}")]/ancestor::tr/@id'
-        y = pageTree.xpath(f"//a[contains(text(),'{template}')]/ancestor::tr/@id")[0]
-        id = y.split("-")[1]
-        return id
+        id = 0
+        try:
+            y = pageTree.xpath(f"//a[contains(text(),'{template}')]/ancestor::tr/@id")[
+                0
+            ]
+            id = y.split("-")[1]
+        except:
+            return None, 0
+        return True, id
 
-    def import_template(self, data) -> int:
+    def import_template(self, data) -> tuple[None, int]:
         self.driver.get(self._url_wp_template)
         self.clik_import_template()
         self.insert_file(data)
